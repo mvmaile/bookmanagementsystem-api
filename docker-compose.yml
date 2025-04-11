@@ -1,0 +1,13 @@
+version: '2.2'
+services: 
+  book-service:
+    image: book-service
+    restart: always
+    container_name: book-service
+    env_file: .env
+    build:
+      context: .
+    volumes:
+     - ./bookstore-service/src/main/resources/platform-bookstore.properties:/src/main/resources/platform-bookstore.properties
+    ports:
+     - "8084:8084"
