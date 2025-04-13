@@ -6,7 +6,6 @@
 ### MYSQL 8.0.41
 ## Step 1: Creating Database and Table Script on MYSQL:
 ####  CREATE DATABASE `bookmanagementsystem_db`;
-#### use `bookmanagementsystem_db`;
 #### CREATE TABLE `book` (
 #### `id` bigint NOT NULL AUTO_INCREMENT,
 #### `created_at` datetime(6) NOT NULL,

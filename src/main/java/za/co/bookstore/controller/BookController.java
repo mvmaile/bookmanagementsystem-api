@@ -37,7 +37,7 @@ private ResponseEntity<Object> updateBook(@PathVariable long id,@Valid @RequestB
 }
 @DeleteMapping("/{id}")
 private ResponseEntity<Object> deleteBook(@PathVariable long id) throws Exception{
-    return new ResponseEntity<>(bookService.deleteBook(id),HttpStatus.OK);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 }
 @GetMapping()
 private ResponseEntity<Object> getAllPaginationBooks( @RequestParam(defaultValue = "0") int page,

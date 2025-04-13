@@ -1,18 +1,17 @@
 package za.co.bookstore.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Random;
-
+@Slf4j
 public class ISBNGeneration {
-   // @Value("${isbn.prefix}")
-    //private static String isbnPrefix;
     private static final String PREFIX = "978";
     private static final Random random = new Random();
 
     public static String generateISBN() {
         // Generate the first 12 digits (prefix + random numbers)
-        StringBuilder sb = new StringBuilder(PREFIX);
+       StringBuilder sb = new StringBuilder(PREFIX);
 
         // Add 9 more random digits (total 12 digits before check digit)
         for (int i = 0; i < 9; i++) {

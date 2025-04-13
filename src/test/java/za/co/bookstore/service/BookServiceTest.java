@@ -72,9 +72,8 @@ public class BookServiceTest {
         // Arrange
         when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
         //Act
-        boolean isexistingBookDeleted = bookService.deleteBook(book.getId());
+         bookService.deleteBook(book.getId());
         //Assert
-        assertTrue(isexistingBookDeleted);
         verify(bookRepository).delete(book);
         verify(bookRepository).findById(book.getId());
 

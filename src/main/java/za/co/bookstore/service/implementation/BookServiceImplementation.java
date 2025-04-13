@@ -32,27 +32,9 @@ public class BookServiceImplementation implements BookService {
     public Book saveBook(BookRequest bookRequest) throws Exception {
         Book saveBook = null;
         String isbn = null;
-        ValidationException validationException = null;
         log.info("Start to save book details");
         try{
             Book book =new Book();
-            try {
-                    isbn = ISBNGeneration.generateISBN();
-                    log.info("ISBN Book {}", isbn);
-
-                    /**
-                     * Checking if ISBN is valid
-                     */
-                    if (!ISBNGeneration.isValidISBN(isbn)) {
-                        throw new ValidationException("This ISBN is not vaild" + isbn);
-                    } else {
-                        book.setIsbn(isbn);
-                        log.info("ISBN Book is Valid");
-                    }
-            } catch (Exception e) {
-                log.info("Failed to generate ISBN because {}",e.getMessage());
-                throw e;
-            }
             /**
              * Check if isbn already exist
              */
@@ -62,7 +44,23 @@ public class BookServiceImplementation implements BookService {
             }
            book.setAuthor(bookRequest.getAuthor());
            book.setTitle(bookRequest.getTitle());
+            try {
+                isbn = ISBNGeneration.generateISBN();
+                log.info("ISBN Book {}", isbn);
 
+                /**
+                 * Checking if ISBN is valid
+                 */
+                if (!ISBNGeneration.isValidISBN(isbn)) {
+                    throw new ValidationException("This ISBN is not vaild" + isbn);
+                } else {
+                    book.setIsbn(isbn);
+                    log.info("ISBN Book is Valid");
+                }
+            } catch (Exception e) {
+                log.info("Failed to generate ISBN because {}",e.getMessage());
+                throw e;
+            }
             /**
              * Doing the saving of book entity
              */
@@ -154,7 +152,7 @@ public class BookServiceImplementation implements BookService {
      * @throws Exception
      */
     @Override
-    public boolean deleteBook(long id) throws Exception {
+    public void deleteBook(long id) throws Exception {
         boolean isBookDeleted = false;
       try{
          Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No Delete Book", "id", id));;
@@ -165,7 +163,6 @@ public class BookServiceImplementation implements BookService {
           log.error("Failed to delete book because of {}",e.getMessage());
           throw e;
       }
-      return isBookDeleted;
     }
 
     /**

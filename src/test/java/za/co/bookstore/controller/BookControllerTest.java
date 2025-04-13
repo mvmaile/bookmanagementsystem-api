@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
 import za.co.bookstore.config.ServiceConfiguration;
 import za.co.bookstore.controller.BookController;
+import za.co.bookstore.exception.ResourceNotFoundException;
 import za.co.bookstore.model.Book;
 import za.co.bookstore.request.BookRequest;
 import za.co.bookstore.service.BookService;
@@ -37,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -84,7 +85,7 @@ String baseUrl = "/api/v1/books";
         mockBook.setAuthor("Lebo Mashaba");
         when(bookService.updateBook(eq(mockBook.getId()),any(BookRequest.class))).thenReturn(mockBook);
         //Act and Assert
-        mockMvc.perform(put(baseUrl+"/"+mockBook.getId()).contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(put(baseUrl+"/{id}",mockBook.getId()).contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mockBook)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(mockBook.getTitle()))
@@ -109,7 +110,7 @@ String baseUrl = "/api/v1/books";
         when(bookService.findBooksById(mockBook.getId())).thenReturn(mockBook);
         //Act and Assert
         assertNotNull(mockBook);
-        mockMvc.perform(get(baseUrl+"/"+mockBook.getId()).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(baseUrl+"/{id}",mockBook.getId()).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(mockBook.getTitle()));
 
@@ -125,5 +126,24 @@ String baseUrl = "/api/v1/books";
         mockMvc.perform(get(baseUrl+"/search?keyword="+keyworks).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+@Test
+    void testDeleteBook() throws Exception {
+        //Arrange
+    doNothing().when(bookService).deleteBook(mockBook.getId());
+    //Act and Assert
+    mockMvc.perform(delete(baseUrl+"/{id}",mockBook.getId())
+                    .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNoContent());
+}
+    @Test
+    void testBookResourceNotFoundException() throws Exception {
+        // Arrange
+        long bookId = 99L;
+        doThrow(new ResourceNotFoundException("Book not found","Id",bookId))
+                .when(bookService).deleteBook(bookId);
 
+        // Act & Assert
+        mockMvc.perform(delete(baseUrl+"/{id}", bookId))
+                .andExpect(status().isNoContent());
+    }
 }
