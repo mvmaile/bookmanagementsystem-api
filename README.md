@@ -4,7 +4,7 @@
 ### maven 3.9.5
 ### swagger 2.5.0
 ### MYSQL 8.0.41
-## Step1: Creating database and table script on MYSQL:
+## Step 1: Creating Database and Table Script on MYSQL:
 ####  CREATE DATABASE `bookmanagementsystem_db`;
 #### use `bookmanagementsystem_db`;
 #### CREATE TABLE `book` (
@@ -16,7 +16,7 @@
 #### `title` varchar(100) DEFAULT NULL,
 #### PRIMARY KEY (`id`)
 #### ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-## Step 2: Checkout the code from gitHub:
+## Step 2: Checkout the Code From GitHub:
 #### git clone https://github.com/mvmaile/bookmanagementsystem-api.git
 ## Step 3: Configurations:
 ### Change below on platform-bookstore.properties file to your db connections 
@@ -29,7 +29,7 @@
 #### $mvn spring-boot:run
 ### When the app is running access API through Swagger url below:
 ### http://localhost:8084/bookservice/swagger-ui.html
-## Step 5: Running the application in docker
+## Step 5: Running the Application in Docker
 #### $mvn clean install -DskipTests
 #### $docker compose build
 #### $docker compose up -d book-service
