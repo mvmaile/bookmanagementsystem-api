@@ -1,4 +1,5 @@
 package za.co.bookstore.controller;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,34 +20,39 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class BookController {
     @Autowired
     private BookService bookService;
-@PostMapping(path = "")
-private ResponseEntity<Object> saveBooks(@RequestBody BookRequest bookRequest) throws Exception {
+@PostMapping()
+private ResponseEntity<Book> saveBooks(@Valid @RequestBody  BookRequest bookRequest) throws Exception {
     Book book = bookService.saveBook(bookRequest);
-    return new ResponseEntity<>(book, CREATED);
+    return new ResponseEntity<>(book,HttpStatus.CREATED);
 }
-@GetMapping(path = "/{id}")
+@GetMapping("/{id}")
 private ResponseEntity<Object> getBook(@PathVariable long id) throws Exception{
     Book book =bookService.findBooksById(id);
     return new ResponseEntity<>(book, HttpStatus.OK);
 }
-@PutMapping(path = "/{id}")
-private ResponseEntity<Object> updateBook(@PathVariable long id,@RequestBody BookRequest bookRequest) throws Exception{
+@PutMapping("/{id}")
+private ResponseEntity<Object> updateBook(@PathVariable long id,@Valid @RequestBody  BookRequest bookRequest) throws Exception{
     Book book = bookService.updateBook(id,bookRequest);
     return new ResponseEntity<>(book,HttpStatus.OK);
 }
-@DeleteMapping(path = "/{id}")
+@DeleteMapping("/{id}")
 private ResponseEntity<Object> deleteBook(@PathVariable long id) throws Exception{
     return new ResponseEntity<>(bookService.deleteBook(id),HttpStatus.OK);
 }
-@GetMapping(path = "")
-private ResponseEntity<Object> getAllBooks( @RequestParam(defaultValue = "0") int page,
+@GetMapping()
+private ResponseEntity<Object> getAllPaginationBooks( @RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size,
                                             @RequestParam(defaultValue = "author") String sortBy,
                                             @RequestParam(defaultValue = "ASC") String direction) throws Exception{
-    Page<Book> bookList = bookService.findAllBooks(page,size,sortBy,direction);
+    Page<Book> bookList = bookService.findAllBooksAndPaginate(page,size,sortBy,direction);
     return new ResponseEntity<>(bookList,HttpStatus.OK);
 }
-@GetMapping(path = "/search")
+@GetMapping("/all")
+private ResponseEntity<Object> getAllBooks() throws Exception {
+    List<Book> bookList = bookService.findAllBooks();
+    return new ResponseEntity<>(bookList,HttpStatus.OK);
+}
+@GetMapping("/search")
     private ResponseEntity<Object> searchBook(@RequestParam String keyword) throws Exception{
     List<Book> bookList = bookService.searchBooks(keyword);
     return new ResponseEntity<>(bookList,HttpStatus.OK);

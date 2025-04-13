@@ -11,3 +11,5 @@ services:
      - ./bookstore-service/src/main/resources/platform-bookstore.properties:/src/main/resources/platform-bookstore.properties
     ports:
      - "8084:8084"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

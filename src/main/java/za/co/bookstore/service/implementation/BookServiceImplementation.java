@@ -1,6 +1,7 @@
 package za.co.bookstore.service.implementation;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,24 +30,25 @@ public class BookServiceImplementation implements BookService {
      */
     @Override
     public Book saveBook(BookRequest bookRequest) throws Exception {
-        log.info("Start to save book details title {} and author {}",bookRequest.getTitle(),bookRequest.getAuthor());
         Book saveBook = null;
         String isbn = null;
+        ValidationException validationException = null;
+        log.info("Start to save book details");
         try{
             Book book =new Book();
             try {
-                isbn = ISBNGeneration.generateISBN();
-                log.info("ISBN Book {}", isbn);
+                    isbn = ISBNGeneration.generateISBN();
+                    log.info("ISBN Book {}", isbn);
 
-                /**
-                 * Checking if ISBN is valid
-                 */
-                if (!ISBNGeneration.isValidISBN(isbn)) {
-                    throw new ValidationException("This ISBN is not vaild" + isbn);
-                } else {
-                    book.setIsbn(isbn);
-                    log.info("ISBN Book is Valid");
-                }
+                    /**
+                     * Checking if ISBN is valid
+                     */
+                    if (!ISBNGeneration.isValidISBN(isbn)) {
+                        throw new ValidationException("This ISBN is not vaild" + isbn);
+                    } else {
+                        book.setIsbn(isbn);
+                        log.info("ISBN Book is Valid");
+                    }
             } catch (Exception e) {
                 log.info("Failed to generate ISBN because {}",e.getMessage());
                 throw e;
@@ -57,22 +59,6 @@ public class BookServiceImplementation implements BookService {
             Book checkBookIsbnExist = bookRepository.findByIsbn(isbn);
             if(checkBookIsbnExist != null){
                 throw new AlreadyExistException("ISBN " +isbn+" book already exist");
-            }
-
-            /**
-             * Checking if the author length >50 and title >100
-             */
-           if(bookRequest.getAuthor().length() >50 && bookRequest.getTitle().length() > 100){
-               throw new ValidationException("Saving Book Author and Title must not be greater than 50 and 100 respectively ");
-           }
-            /**
-             * Checking if title and author is empty and blank
-             */
-           if(bookRequest.getTitle().isEmpty() || bookRequest.getTitle().isBlank()){
-               throw new ValidationException("Saving Book Title must not be empty or blank ");
-           }
-            if(bookRequest.getAuthor().isEmpty() || bookRequest.getAuthor().isBlank()){
-                throw new ValidationException("Saving Book Author must not be empty or blank ");
             }
            book.setAuthor(bookRequest.getAuthor());
            book.setTitle(bookRequest.getTitle());
@@ -94,7 +80,7 @@ public class BookServiceImplementation implements BookService {
      * @throws Exception
      */
     @Override
-    public Page<Book> findAllBooks(int page, int size,String sortBy,String direction) throws Exception {
+    public Page<Book> findAllBooksAndPaginate(int page, int size,String sortBy,String direction) throws Exception {
         Page<Book> listOfBooks = null;
         try{
             Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
@@ -113,6 +99,15 @@ public class BookServiceImplementation implements BookService {
     }
 
     /**
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<Book> findAllBooks() throws Exception {
+       return bookRepository.findAll();
+    }
+
+    /**
      * @param id
      * @return
      * @throws Exception
@@ -122,7 +117,7 @@ public class BookServiceImplementation implements BookService {
         Book book = null;
         try{
             book = bookRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Book", "id", id));
+                    .orElseThrow(() -> new ResourceNotFoundException("No Book", "id", id));
             log.info("Retrieve a book with title {} ",book.getTitle());
         } catch (Exception e) {
             log.error("Failed to retrieve book because of {}",e.getMessage());
@@ -139,22 +134,14 @@ public class BookServiceImplementation implements BookService {
     @Override
     public Book updateBook(long id,BookRequest bookRequest) throws Exception {
         Book updateBook = null;
+
         try{
             Book book = bookRepository.findById(id).orElseThrow(() ->
-                    new ResourceNotFoundException("Book to update with id","Id ",id));
-            if(bookRequest.getAuthor().length() >50 && bookRequest.getTitle().length() > 100){
-                throw new ValidationException("Update Book Author and Title must not be greater than 50 and 100 respectively ");
-            }
-            if(bookRequest.getTitle().isEmpty() || bookRequest.getTitle().isBlank()){
-                throw new ValidationException("Update Book Title must not be empty or blank ");
-            }
-            if(bookRequest.getAuthor().isEmpty() || bookRequest.getAuthor().isBlank()){
-                throw new ValidationException("Update Book Author must not be empty or blank ");
-            }
+                    new ResourceNotFoundException("No Book to update with id","Id ",id));
                 book.setTitle(bookRequest.getTitle());
                 book.setAuthor(bookRequest.getAuthor());
                 updateBook = bookRepository.save(book);
-           log.info("Manage to update book with title {} and author {}",updateBook.getTitle(),updateBook.getAuthor());
+                log.info("Manage to update book with title {} and author {}", updateBook.getTitle(), updateBook.getAuthor());
         } catch (Exception e) {
             log.error("Failed to update book because of {}",e.getMessage());
             throw e;
@@ -170,7 +157,7 @@ public class BookServiceImplementation implements BookService {
     public boolean deleteBook(long id) throws Exception {
         boolean isBookDeleted = false;
       try{
-         Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Delete Book", "id", id));;
+         Book book = bookRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No Delete Book", "id", id));;
          bookRepository.delete(book);
          isBookDeleted = true;
          log.info("Manage to delete book with ISBN {}",book.getIsbn());
