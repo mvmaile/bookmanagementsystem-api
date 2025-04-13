@@ -24,11 +24,13 @@
 ### cd /bookstore-service$ run below command
 #### $mvn clean install
 #### $mvn spring-boot:run
+# When the app is running access API through Swagger url below:
+### http://localhost:8084/bookservice/swagger-ui.html
 # Running the application in docker
 ### $mvn clean install -DskipTests
 #### $docker compose build
 #### $docker compose up -d book-service
-# Swagger url
+# When the app is running access API through Swagger url below:
 ### http://localhost:8084/bookservice/swagger-ui.html
 
 # Running JUnit test
