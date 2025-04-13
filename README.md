@@ -4,7 +4,7 @@
 ### maven 3.9.5
 ### swagger 2.5.0
 ### MYSQL 8.0.41
-## Creating database and table script on MYSQL:
+## Step1: Creating database and table script on MYSQL:
 ####  CREATE DATABASE `bookmanagementsystem_db`;
 #### use `bookmanagementsystem_db`;
 #### CREATE TABLE `book` (
@@ -16,29 +16,32 @@
 #### `title` varchar(100) DEFAULT NULL,
 #### PRIMARY KEY (`id`)
 #### ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-## Step 1: Checkout the code from gitHub:
+## Step 2: Checkout the code from gitHub:
 #### git clone https://github.com/mvmaile/bookmanagementsystem-api.git
-
-## Step 2: cd to the checkout project and run below commands:
-# Running on local machine 
+## Step 3: Configurations:
+### Change below on platform-bookstore.properties file to your db connections 
+### spring.datasource.url=jdbc:mysql://your host:your mysql port/bookmanagementsystem_db
+### spring.datasource.username =your mysql username
+### spring.datasource.password =your mysql password
+## Step 4: Running on Local Machine 
 ### cd /bookstore-service$ run below command
-#### $mvn clean install
+#### $mvn clean install -DskipTests
 #### $mvn spring-boot:run
-# When the app is running access API through Swagger url below:
+### When the app is running access API through Swagger url below:
 ### http://localhost:8084/bookservice/swagger-ui.html
-# Running the application in docker
-### $mvn clean install -DskipTests
+## Step 5: Running the application in docker
+#### $mvn clean install -DskipTests
 #### $docker compose build
 #### $docker compose up -d book-service
-# When the app is running access API through Swagger url below:
+### When the app is running access API through Swagger url below:
 ### http://localhost:8084/bookservice/swagger-ui.html
 
-# Running JUnit test
-## for controller layer
+## Step 6 : Running JUnit Test
+### For controller layer
 #### $mvn test -Dtest=BookControllerTest
-## for service layer
+### For service layer
 #### $mvn test -Dtest=BookServiceTest
-## for both layer
+### For both layer
 #### $mvn test
 
 
